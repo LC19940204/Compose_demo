@@ -1,5 +1,6 @@
 package com.example.compose.ui.pager.list
 
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,42 +15,47 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.compose.di.ListPagerDomainActionEnterPoint
 import com.example.compose.model.ListItemData
+import com.example.compose.ui.theme.AppTheme
 import dagger.hilt.EntryPoints
 
 @Composable
 fun PagerListScreen(
+    navController: NavHostController,
     viewModel: ListViewModel = hiltViewModel(),
     listDomainAction: ListPagerDomainAction = getListPagerDomainAction()
 ) {
-    val listState = rememberLazyListState()
+    Log.e("Test", "PagerListScreen viewModel: $viewModel")
     val data = viewModel.listData
-    LaunchedEffect( true) {
+    LaunchedEffect(null) {
+        Log.e("Test", "PagerListScreen viewModel: LaunchedEffect")
         listDomainAction.init(viewModel)
     }
     Box (modifier = Modifier.fillMaxSize()){
         LazyColumn(modifier = Modifier
-            .background(Color.LightGray)
+            .background(brush = Brush.horizontalGradient(AppTheme.colors.gradient6_1))
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(10.dp)
             .align(Alignment.TopStart),
-            verticalArrangement = Arrangement.Top,
-            state = listState) {
+            verticalArrangement = Arrangement.Top) {
+            Log.e("Test", "PagerListScreen viewModel: LazyColumn")
             itemsIndexed(data) { index, item ->
                 listItem(item) {
-
+                   if (index >= 10) {
+                       navController.navigate("ListDetailPage/${it.title}")
+                   }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun listItem(item: ListItemData, itemClicked: (ListItemData) -> Unit = {}) {

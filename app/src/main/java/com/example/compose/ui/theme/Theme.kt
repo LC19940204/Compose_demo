@@ -1,172 +1,185 @@
+
 package com.example.compose.ui.theme
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.runtime.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-//夜色主题
-private val DarkColorPalette = AppColors(
-    themeUi = black1,
-    background = black2,
-    listItem = black3,
-    divider = black4,
-    textPrimary = white4,
-    textSecondary = grey1,
-    mainColor = white,
-    card = white1,
-    icon = white4,
-    info = info,
-    warn = warn,
-    success = green3,
-    error = red2,
-    primaryBtnBg = black1,
-    secondBtnBg = white1,
-    hot = red,
-    placeholder = grey1,
+private val LightColorPalette = Color(
+    brand = Shadow5,
+    brandSecondary = Ocean3,
+    uiBackground = Neutral0,
+    uiBorder = Neutral4,
+    uiFloated = FunctionalGrey,
+    textSecondary = Neutral7,
+    textHelp = Neutral6,
+    textInteractive = Neutral0,
+    textLink = Ocean11,
+    iconSecondary = Neutral7,
+    iconInteractive = Neutral0,
+    iconInteractiveInactive = Neutral1,
+    error = FunctionalRed,
+    gradient6_1 = listOf(Shadow4, Ocean3, Shadow2, Ocean3, Shadow4),
+    gradient6_2 = listOf(Rose4, Lavender3, Rose2, Lavender3, Rose4),
+    gradient3_1 = listOf(Shadow2, Ocean3, Shadow4),
+    gradient3_2 = listOf(Rose2, Lavender3, Rose4),
+    gradient2_1 = listOf(Shadow4, Shadow11),
+    gradient2_2 = listOf(Ocean3, Shadow3),
+    gradient2_3 = listOf(Lavender3, Rose2),
+    tornado1 = listOf(Shadow4, Ocean3),
+    isDark = false
 )
 
-//白天主题
-private val LightColorPalette = AppColors(
-    themeUi = black1,
-    background = white2,
-    listItem = white,
-    divider = white3,
-    textPrimary = black3,
-    textSecondary = grey1,
-    mainColor = white,
-    card = white1,
-    icon = white4,
-    info = info,
-    warn = warn,
-    success = green3,
-    error = red2,
-    primaryBtnBg = black1,
-    secondBtnBg = white3,
-    hot = red,
-    placeholder = white3,
+private val DarkColorPalette = Color(
+    brand = Shadow1,
+    brandSecondary = Ocean2,
+    uiBackground = Neutral8,
+    uiBorder = Neutral3,
+    uiFloated = FunctionalDarkGrey,
+    textPrimary = Shadow1,
+    textSecondary = Neutral0,
+    textHelp = Neutral1,
+    textInteractive = Neutral7,
+    textLink = Ocean2,
+    iconPrimary = Shadow1,
+    iconSecondary = Neutral0,
+    iconInteractive = Neutral7,
+    iconInteractiveInactive = Neutral6,
+    error = FunctionalRedDark,
+    gradient6_1 = listOf(Shadow5, Ocean7, Shadow9, Ocean7, Shadow5),
+    gradient6_2 = listOf(Rose11, Lavender7, Rose8, Lavender7, Rose11),
+    gradient3_1 = listOf(Shadow9, Ocean7, Shadow5),
+    gradient3_2 = listOf(Rose8, Lavender7, Rose11),
+    gradient2_1 = listOf(Ocean3, Shadow3),
+    gradient2_2 = listOf(Ocean4, Shadow2),
+    gradient2_3 = listOf(Lavender3, Rose3),
+    tornado1 = listOf(Shadow4, Ocean3),
+    isDark = true
 )
-var LocalAppColors = compositionLocalOf {
-    LightColorPalette
-}
 
-@Stable
-object AppTheme {
-    val colors: AppColors
-        @Composable
-        get() = LocalAppColors.current
-
-    enum class Theme {
-        Light, Dark
-    }
-}
-
-@Stable
-class AppColors(
-    themeUi: Color,
-    background: Color,
-    listItem: Color,
-    divider: Color,
-    textPrimary: Color,
-    textSecondary: Color,
-    mainColor: Color,
-    card: Color,
-    icon: Color,
-    info: Color,
-    warn: Color,
-    success: Color,
-    error: Color,
-    primaryBtnBg: Color,
-    secondBtnBg: Color,
-    hot: Color,
-    placeholder: Color,
+@Composable
+fun ProvideAppTheme(
+    colors: com.example.compose.ui.theme.Color,
+    content: @Composable () -> Unit
 ) {
-    var themeUi: Color by mutableStateOf(themeUi)
-        internal set
-    var background: Color by mutableStateOf(background)
-        private set
-    var listItem: Color by mutableStateOf(listItem)
-        private set
-    var divider: Color by mutableStateOf(divider)
-        private set
-    var textPrimary: Color by mutableStateOf(textPrimary)
-        internal set
-    var textSecondary: Color by mutableStateOf(textSecondary)
-        private set
-    var mainColor: Color by mutableStateOf(mainColor)
-        internal set
-    var card: Color by mutableStateOf(card)
-        private set
-    var icon: Color by mutableStateOf(icon)
-        private set
-    var info: Color by mutableStateOf(info)
-        private set
-    var warn: Color by mutableStateOf(warn)
-        private set
-    var success: Color by mutableStateOf(success)
-        private set
-    var error: Color by mutableStateOf(error)
-        private set
-    var primaryBtnBg: Color by mutableStateOf(primaryBtnBg)
-        internal set
-    var secondBtnBg: Color by mutableStateOf(secondBtnBg)
-        private set
-    var hot: Color by mutableStateOf(hot)
-        private set
-    var placeholder: Color by mutableStateOf(placeholder)
-        private set
+    CompositionLocalProvider(LocalAppColors provides colors, content = content)
+}
 
+private val LocalAppColors = staticCompositionLocalOf{
+    LightColorPalette
 }
 
 
 @Composable
 fun AppTheme(
-    theme: AppTheme.Theme = AppTheme.Theme.Light,
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val colors = if (darkTheme) DarkColorPalette else LightColorPalette
 
-    val targetColors = when (theme) {
-        AppTheme.Theme.Light -> LightColorPalette
-        AppTheme.Theme.Dark -> DarkColorPalette
-    }
+    ProvideAppTheme(colors, content)
+}
 
-    val themeUi = animateColorAsState(targetColors.themeUi, TweenSpec(600))
-    val background = animateColorAsState(targetColors.background, TweenSpec(600))
-    val listItem = animateColorAsState(targetColors.listItem, TweenSpec(600))
-    val divider = animateColorAsState(targetColors.divider, TweenSpec(600))
-    val textPrimary = animateColorAsState(targetColors.textPrimary, TweenSpec(600))
-    val textSecondary = animateColorAsState(targetColors.textSecondary, TweenSpec(600))
-    val mainColor = animateColorAsState(targetColors.mainColor, TweenSpec(600))
-    val card = animateColorAsState(targetColors.card, TweenSpec(600))
-    val icon = animateColorAsState(targetColors.icon, TweenSpec(600))
-    val info = animateColorAsState(targetColors.info, TweenSpec(600))
-    val warn = animateColorAsState(targetColors.warn, TweenSpec(600))
-    val success = animateColorAsState(targetColors.success, TweenSpec(600))
-    val error = animateColorAsState(targetColors.error, TweenSpec(600))
-    val primaryBtnBg = animateColorAsState(targetColors.primaryBtnBg, TweenSpec(600))
-    val secondBtnBg = animateColorAsState(targetColors.secondBtnBg, TweenSpec(600))
-    val hot = animateColorAsState(targetColors.hot, TweenSpec(600))
-    val placeholder = animateColorAsState(targetColors.placeholder, TweenSpec(600))
-    val appColors = AppColors(
-        themeUi = themeUi.value,
-        background = background.value,
-        listItem = listItem.value,
-        divider = divider.value,
-        textPrimary = textPrimary.value,
-        textSecondary = textSecondary.value,
-        mainColor = mainColor.value,
-        card = card.value,
-        icon = icon.value,
-        primaryBtnBg = primaryBtnBg.value,
-        secondBtnBg = secondBtnBg.value,
-        info = info.value,
-        warn = warn.value,
-        success = success.value,
-        error = error.value,
-        hot = hot.value,
-        placeholder = placeholder.value
-    )
+object AppTheme {
+    val colors: com.example.compose.ui.theme.Color
+        @Composable
+        get() = LocalAppColors.current
+}
 
-    CompositionLocalProvider(LocalAppColors provides appColors, content = content)
-
+/**
+ * Jetsnack custom Color Palette
+ */
+@Stable
+class Color(
+    gradient6_1: List<Color>,
+    gradient6_2: List<Color>,
+    gradient3_1: List<Color>,
+    gradient3_2: List<Color>,
+    gradient2_1: List<Color>,
+    gradient2_2: List<Color>,
+    gradient2_3: List<Color>,
+    brand: Color,
+    brandSecondary: Color,
+    uiBackground: Color,
+    uiBorder: Color,
+    uiFloated: Color,
+    interactivePrimary: List<Color> = gradient2_1,
+    interactiveSecondary: List<Color> = gradient2_2,
+    interactiveMask: List<Color> = gradient6_1,
+    textPrimary: Color = brand,
+    textSecondary: Color,
+    textHelp: Color,
+    textInteractive: Color,
+    textLink: Color,
+    tornado1: List<Color>,
+    iconPrimary: Color = brand,
+    iconSecondary: Color,
+    iconInteractive: Color,
+    iconInteractiveInactive: Color,
+    error: Color,
+    notificationBadge: Color = error,
+    isDark: Boolean
+) {
+    var gradient6_1 by mutableStateOf(gradient6_1)
+        private set
+    var gradient6_2 by mutableStateOf(gradient6_2)
+        private set
+    var gradient3_1 by mutableStateOf(gradient3_1)
+        private set
+    var gradient3_2 by mutableStateOf(gradient3_2)
+        private set
+    var gradient2_1 by mutableStateOf(gradient2_1)
+        private set
+    var gradient2_2 by mutableStateOf(gradient2_2)
+        private set
+    var gradient2_3 by mutableStateOf(gradient2_3)
+        private set
+    var brand by mutableStateOf(brand)
+        private set
+    var brandSecondary by mutableStateOf(brandSecondary)
+        private set
+    var uiBackground by mutableStateOf(uiBackground)
+        private set
+    var uiBorder by mutableStateOf(uiBorder)
+        private set
+    var uiFloated by mutableStateOf(uiFloated)
+        private set
+    var interactivePrimary by mutableStateOf(interactivePrimary)
+        private set
+    var interactiveSecondary by mutableStateOf(interactiveSecondary)
+        private set
+    var interactiveMask by mutableStateOf(interactiveMask)
+        private set
+    var textPrimary by mutableStateOf(textPrimary)
+        private set
+    var textSecondary by mutableStateOf(textSecondary)
+        private set
+    var textHelp by mutableStateOf(textHelp)
+        private set
+    var textInteractive by mutableStateOf(textInteractive)
+        private set
+    var tornado1 by mutableStateOf(tornado1)
+        private set
+    var textLink by mutableStateOf(textLink)
+        private set
+    var iconPrimary by mutableStateOf(iconPrimary)
+        private set
+    var iconSecondary by mutableStateOf(iconSecondary)
+        private set
+    var iconInteractive by mutableStateOf(iconInteractive)
+        private set
+    var iconInteractiveInactive by mutableStateOf(iconInteractiveInactive)
+        private set
+    var error by mutableStateOf(error)
+        private set
+    var notificationBadge by mutableStateOf(notificationBadge)
+        private set
+    var isDark by mutableStateOf(isDark)
+        private set
 }

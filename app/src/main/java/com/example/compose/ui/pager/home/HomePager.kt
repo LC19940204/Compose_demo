@@ -1,25 +1,25 @@
 package com.example.compose.ui.pager.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.compose.ui.pager.list.PagerListScreen
+import com.example.compose.ui.pager.subPage.subPage
+import com.example.compose.ui.theme.AppTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
@@ -30,7 +30,6 @@ fun homePage(
 
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
-    val horizontalPageState = rememberPagerState(2)
     val scope =  rememberCoroutineScope()
     Scaffold(scaffoldState = scaffoldState,
         topBar = {
@@ -67,44 +66,33 @@ fun homePage(
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         , verticalArrangement = Arrangement.Center) {
             oneHomePage(navController = navController)
-
-            /*HorizontalPager(3, state = horizontalPageState) {
-                if (horizontalPageState.currentPage == 0) {
-                    oneHomePage(navController = navController)
-                } else {
-                    homeSubPage(pagerTitle = "Pager${this.currentPage}")
-                }
-            }*/
         }
     }
 }
 
-
-
-@Composable
-fun homeSubPage(
-    pagerTitle: String
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Text(text = pagerTitle)
-    }
-
-}
 
 @Composable
 fun oneHomePage(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
+    Log.e("Test", "oneHomePage1")
     NavHost(navController = navController, startDestination = "NavPager1") {
+        Log.e("Test", "oneHomePage2")
         composable(route = "NavPager1") {
-            PagerListScreen()
+            Log.e("Test", "oneHomePage NavPager1")
+            PagerListScreen(navController)
         }
         composable(route = "NavPager2") {
-            homeSubPage(pagerTitle = "NavPager2")
+            subPage(backgroundColor = AppTheme.colors.gradient2_3, pagerTitle = "NavPager2", navHostController = navController)
         }
         composable(route = "NavPager3") {
-            homeSubPage(pagerTitle = "NavPager3")
+            subPage(backgroundColor = AppTheme.colors.gradient3_2,pagerTitle = "NavPager3", navHostController = navController)
+        }
+
+        composable(route = "ListDetailPage/{title}",
+            arguments = listOf(navArgument("title") { type = NavType.StringType })) {
+            subPage(pagerTitle = it.arguments?.getString("title")?:"ListDetailPage", navHostController = navController)
         }
     }
 }
